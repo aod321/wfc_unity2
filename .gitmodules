@@ -1,0 +1,3 @@
+[submodule "pybind11_fastwfc"]
+	path = pybind11_fastwfc
+	url = https://github.com/aod321/pybind11_fastwfc

@@ -13,7 +13,8 @@ from tqdm import tqdm
 import os
 import gym
 import torch
-from stable_baselines3 import A2C, PPO
+from stable_baselines3 import A2C, PPO, DQN, DDPG
+from sb3_contrib import QRDQN
 import time
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.results_plotter import load_results, ts2xy
@@ -26,7 +27,7 @@ import os
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = '1'
 
 
-MAX_STEPS_PER_EPOSIDE = 2000
+MAX_STEPS_PER_EPOSIDE = 5000
 
 def make_env(rank: int) -> Callable:
     """
@@ -126,7 +127,9 @@ if __name__ == "__main__":
     # Create the callback: check every 5000 steps
     save_callback = SaveOnBestTrainingRewardCallback(check_freq=5000, log_dir=log_dir)
     device = torch.device("mps")
-    model = PPO('CnnPolicy', vec_env, verbose=0,  device=device)
+    # model = PPO('CnnPolicy', vec_env, verbose=0,  device=device)
+    # model = DQN('CnnPolicy', vec_env, verbose=0,  device=device, learning_rate=3e-4,batch_size=512,max_grad_norm=0.5,train_freq=8)
+    model = QRDQN('CnnPolicy', vec_env, verbose=0,  device=device)
     sum_evo_count = 0
     map_collections = []
     try:

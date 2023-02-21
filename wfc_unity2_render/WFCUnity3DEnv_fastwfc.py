@@ -39,6 +39,7 @@ def dm_env_creator_from_local_disk(config):
 # Add WFC and gRPC support for unity3D RLLib enviroment
 class WFCUnity3DEnv(GymFromDMEnv):
     def __init__(self, env: dm_env.Environment=None, max_steps=2000, wfc_size=9, config=None, file_name=None, port=30051, random_seed=None, host="0.0.0.0"):
+        self.wfc_size = wfc_size
         self.set_random_seed(random_seed)
         self.world_name = None
         self.height_map = None
@@ -103,7 +104,8 @@ class WFCUnity3DEnv(GymFromDMEnv):
         # use maxium playable area as probility space
         # print(np.flatnonzero(reduced_map == np.argmax(np.bincount(reduced_map))).astype(np.int32))
         # return np.flatnonzero(reduced_map == np.argmax(np.bincount(reduced_map))).astype(np.int32)
-        return list(np.arange(81).astype(np.int32))
+        wfc_size = self.wfc_size
+        return list(np.arange(wfc_size*wfc_size).astype(np.int32))
     
     def set_random_seed(self, seed=None):
         if seed:

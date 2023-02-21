@@ -1,0 +1,17 @@
+wandb:
+  entity: myinzi123
+  project: train_on_human_map
+  api_key: c6e9330d491cdb9bbde9274a028400bd61749e81
+  start_method: thread
+maps:
+  wfc_size: 9
+  num_envs: 16
+  path: ./stimulus_jsons/
+  name: 4
+  enable_node_pairs: false
+train:
+  timesteps: 1500000
+  batch_size: 1024
+  compute_device_id: 7
+  graphics_device_id: 7
+  headless: true

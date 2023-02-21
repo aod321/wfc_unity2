@@ -48,12 +48,43 @@ def tiles2data(tiles_id, size=81):
         newdata.append(tiledict[str(i)])
     return newdata
 
+# Just to bind index and value together
+class TileClass:
+    def __init__(self, index, value):
+        self.index = index
+        self.value = value
+
+    def __repr__(self):
+        return f"TileClass({self.index}, {self.value})"
+    
+    def __str__(self):
+        return f"TileClass({self.index}, {self.value})"
+    
+    def get_node_id(self):
+        return tileid2nodeid(self.value)
+
+def tileid2nodeid(tile_id, corner_extra_node=False):
+    # tile is a corner
+    if corner_extra_node and (tile_id in list(range(24,84))):
+        node_id = [tile_id+0.1, tile_id+0.2]
+    else:
+        node_id = [tile_id]
+    return node_id
+
+def nodeid2tileid(node_id):
+    if isinstance(node_id, str):
+        tile_id = int(float(node_id))
+    if isinstance(node_id, float):
+        tile_id = int(node_id)
+    else:
+        tile_id = node_id
+    return tile_id
 
 """
 Rules for setting whether a neighbor is connected or not.
 Using rule combination to get the connectity dict.
 """
-def get_connectity_dict(out_height_dict=False):
+def get_connectity_dict(out_height_dict=False, corner_extra_node=False, return_num_all=False):
 
     # Some initial values used to calculate node index of the tile
     num_cubes = 6
@@ -72,54 +103,144 @@ def get_connectity_dict(out_height_dict=False):
     ramp_list = list(range(range2, range3))
     ramp_set = set(ramp_list)
     all_list = list(range(num_all))
+    all_corner_node_id_list = []
+    all_corner_node_id_dict = {}
+    for corner_tile_id in corner_list:
+        all_corner_node_id_dict[corner_tile_id] = tileid2nodeid(corner_tile_id, corner_extra_node=corner_extra_node)
+        all_corner_node_id_list.extend(all_corner_node_id_dict[corner_tile_id])
     """
     Our map has 6 height layers in total, where the corresponding tiles are assigned to the corresponding layers using a dictionary table.
     Some boundary values are set just in case, so as to save the boundary judgment logic.
     To make it easier to understand, here are a table of the tile index and their easy-to-understand names:
     TIP1: Height and color are actually one-to-one correspondence, for example, gray is 1, blue is 2, ...
-    TIP2: The corners are mamed in order of color from left to right, for example, corner_blue_gray means the left part of the tile is blue, and the right part is gray.
+    TIP2: The corners are named in order of color from left to right, for example, corner_blue_gray means the left part of the tile is blue, and the right part is gray.
+    ---
+    Old version
     TIP3: Since the corner is a mix of two height bricks, I only assign the height based on the higher color while making it accessible to both height bricks(direction limited).
           This will lead to an abnormal path like lowcube->corner->highcube, which should be filtered out later.
-
-    | ID          | Name                 | Height |
-    | ----------- | -------------------- | ------ |
-    | 0,1,2,3     | gray_cube            | 1      |
-    | 4,5,6,7     | blue_cube            | 2      |
-    | 8,9,10,11   | yellow_cube          | 3      |
-    | 12,13,14,15 | orange_cube          | 4      |
-    | 16,17,18,19 | red_cube             | 5      |
-    | 20,21,22,23 | white_cube           | 6      |
-    | 24,25,26,27 | corner_blue_gray     | 2      |
-    | 28,29,30,31 | corner_yellow_blue   | 3      |
-    | 32,33,34,35 | corner_orange_yellow | 4      |
-    | 36,37,38,39 | corner_red_orange    | 5      |
-    | 40,41,42,43 | corner_white_red     | 6      |
-    | 44,45,46,47 | corner_yellow_gray   | 3      |
-    | 48,49,50,51 | corner_orange_blue   | 4      |
-    | 52,53,54,55 | corner_red_yellow    | 5      |
-    | 56,57,58,59 | corner_white_orange  | 6      |
-    | 60,61,62,63 | corner_orange_gray   | 4      |
-    | 64,65,66,67 | corner_red_blue      | 5      |
-    | 68,69,70,71 | corner_white_yellow  | 6      |
-    | 72,73,74,75 | corner_red_gray      | 5      |
-    | 76,77,78,79 | corner_white_blue    | 6      |
-    | 80,81,82,83 | corner_white_gray    | 6      |
-    | 84,85,86,87 | ramp_blue            | 2      |
-    | 88,89,90,91 | ramp_yellow          | 3      |
-    | 92,93,94,95 | ramp_orange          | 4      |
-    | 96,97,98,99 | ramp_red             | 5      |
-    | 100,101,102,103 | ramp_white          | 6      |
+    ---
+    New Version:
+    TIP3: Since the corner is a mix of two height bricks, I split the corner into two nodes, and each node is assigned to the corresponding height.
     """
-    height_tile_dict = {
-        0: set(),
-        1: set(all_list[:4]),
-        2: set(all_list[4:8]+all_list[24:28]+all_list[84:88]),
-        3: set(all_list[8:12]+all_list[28:32]+all_list[44:48]+all_list[88:92]),
-        4: set(all_list[12:16]+all_list[32:36]+all_list[48:52]+all_list[60:64]+all_list[92:96]),
-        5: set(all_list[16:20]+all_list[36:40]+all_list[52:56]+all_list[64:68]+all_list[72:76]+all_list[96:100]),
-        6: set(all_list[20:24]+all_list[40:44]+all_list[56:60]+all_list[68:72]+all_list[76:80]+all_list[80:84]+all_list[100:104]),
-        7: set(),
-    }
+    all_tile_id = list(range(num_all))
+    if corner_extra_node:
+        # exclude corner in tile_id
+        all_tile_id = sorted(list(set(all_tile_id) - corner_set))
+        # 1 corner tile --> 2 corner node id, each node has its height
+        # for example: 24 --> 24.1, 24.2; where the height of 24.1 is 2, and the height of 24.2 is 1. Full height informations of corner node are listed in below table:
+        # | 24,25,26,27 | corner_blue_gray     | (2,1),(1,2),(1,2),(2,1) |
+        # | 28,29,30,31 | corner_yellow_blue   | (3,2),(2,3),(2,3),(3,2) |
+        # | 32,33,34,35 | corner_orange_yellow | (4,3),(3,4),(3,4),(4,3) |
+        # | 36,37,38,39 | corner_red_orange    | (5,4),(4,5),(4,5),(5,4) |
+        # | 40,41,42,43 | corner_white_red     | (6,5),(5,6),(5,6),(6,5) |
+        # | 44,45,46,47 | corner_yellow_gray   | (3,1),(1,3),(1,3),(3,1) |
+        # | 48,49,50,51 | corner_orange_blue   | (4,2),(2,4),(2,4),(4,2) |
+        # | 52,53,54,55 | corner_red_yellow    | (5,3),(3,5),(3,5),(5,3) |
+        # | 56,57,58,59 | corner_white_orange  | (6,4),(4,6),(4,6),(6,4) |
+        # | 60,61,62,63 | corner_orange_gray   | (4,1),(1,4),(1,4),(4,1) |
+        # | 64,65,66,67 | corner_red_blue      | (5,2),(2,5),(2,5),(5,2) |
+        # | 68,69,70,71 | corner_white_yellow  | (6,3),(3,6),(3,6),(6,3) |
+        # | 72,73,74,75 | corner_red_gray      | (5,1),(1,5),(1,5),(5,1) |
+        # | 76,77,78,79 | corner_white_blue    | (6,2),(2,6),(2,6),(6,2) |
+        # | 80,81,82,83 | corner_white_gray    | (6,1),(1,6),(1,6),(6,1) |
+        all_tile_id.extend(all_corner_node_id_list)
+        height_tile_dict = {
+            0: set(),
+            1: set(all_list[:4]),
+            2: set(all_list[4:8]+all_list[84:88]),
+            3: set(all_list[8:12]+all_list[88:92]),
+            4: set(all_list[12:16]+all_list[92:96]),
+            5: set(all_list[16:20]+all_list[96:100]),
+            6: set(all_list[20:24]+all_list[100:104]),
+            7: set(),
+        }
+        # height_tile_dict[1] |= all_corner_node_id_dict[24+4*0][1] + all_corner_node_id_dict[25][0] + all_corner_node_id_dict[26][0] + all_corner_node_id_dict[27][1]
+        # height_tile_dict[2] |= all_corner_node_id_dict[24+4*0][0] + all_corner_node_id_dict[25][1] + all_corner_node_id_dict[26][1] + all_corner_node_id_dict[27][0] 
+        # height_tile_dict[2] |= all_corner_node_id_dict[24+4][1] + all_corner_node_id_dict[29][0] + all_corner_node_id_dict[30][0] + all_corner_node_id_dict[31][1]
+        # height_tile_dict[3] |= all_corner_node_id_dict[24+4][0] + all_corner_node_id_dict[29][1] + all_corner_node_id_dict[30][1] + all_corner_node_id_dict[31][0]
+        # height_tile_dict[3] |= all_corner_node_id_dict[24+4*2][1] + all_corner_node_id_dict[33][0] + all_corner_node_id_dict[34][0] + all_corner_node_id_dict[35][1]
+        # height_tile_dict[4] |= all_corner_node_id_dict[24+4*2][0] + all_corner_node_id_dict[33][1] + all_corner_node_id_dict[34][1] + all_corner_node_id_dict[35][0]
+        # height_tile_dict[4] |= all_corner_node_id_dict[24+4*3][1] + all_corner_node_id_dict[37][0] + all_corner_node_id_dict[38][0] + all_corner_node_id_dict[39][1]
+        # height_tile_dict[5] |= all_corner_node_id_dict[24+4*3][0] + all_corner_node_id_dict[37][1] + all_corner_node_id_dict[38][1] + all_corner_node_id_dict[39][0]
+        # height_tile_dict[5] |= all_corner_node_id_dict[24+4*4][1] + all_corner_node_id_dict[41][0] + all_corner_node_id_dict[42][0] + all_corner_node_id_dict[43][1]
+        # height_tile_dict[6] |= all_corner_node_id_dict[24+4*4][0] + all_corner_node_id_dict[41][1] + all_corner_node_id_dict[42][1] + all_corner_node_id_dict[43][0]
+        for k in range(1,7):
+            height_tile_dict[k] |= set([all_corner_node_id_dict[24+4*k][1], all_corner_node_id_dict[25+4*k][0], all_corner_node_id_dict[26+4*k][0], all_corner_node_id_dict[27+4*k][1]])
+            if k != 6:
+                height_tile_dict[k+1] |= set([all_corner_node_id_dict[24+4*k][0], all_corner_node_id_dict[25+4*k][1], all_corner_node_id_dict[26+4*k][1], all_corner_node_id_dict[27+4*k][0]])
+        # height_tile_dict[1] |= set(all_corner_node_id_dict[44][1])| set(all_corner_node_id_dict[45][0]) | set(all_corner_node_id_dict[46][0]) | set(all_corner_node_id_dict[47][1])
+        # height_tile_dict[2] |= set(all_corner_node_id_dict[48][1])| set(all_corner_node_id_dict[49][0]) | set(all_corner_node_id_dict[50][0]) | set(all_corner_node_id_dict[51][1])
+        # height_tile_dict[3] |= set(all_corner_node_id_dict[52][1])| set(all_corner_node_id_dict[53][0]) | set(all_corner_node_id_dict[54][0]) | set(all_corner_node_id_dict[55][1])
+        # height_tile_dict[4] |= set(all_corner_node_id_dict[56][1])| set(all_corner_node_id_dict[57][0]) | set(all_corner_node_id_dict[58][0]) | set(all_corner_node_id_dict[59][1])
+        # height_tile_dict[3] |= set(all_corner_node_id_dict[44][0])| set(all_corner_node_id_dict[45][1]) | set(all_corner_node_id_dict[46][1]) | set(all_corner_node_id_dict[47][0])
+        # height_tile_dict[4] |= set(all_corner_node_id_dict[48][0])| set(all_corner_node_id_dict[49][1]) | set(all_corner_node_id_dict[50][1]) | set(all_corner_node_id_dict[51][0])
+        # height_tile_dict[5] |= set(all_corner_node_id_dict[52][0])| set(all_corner_node_id_dict[53][1]) | set(all_corner_node_id_dict[54][1]) | set(all_corner_node_id_dict[55][0])
+        # height_tile_dict[6] |= set(all_corner_node_id_dict[56][0])| set(all_corner_node_id_dict[57][1]) | set(all_corner_node_id_dict[58][1]) | set(all_corner_node_id_dict[59][0])
+        for k in range(4):
+            height_tile_dict[k+1] |= set([all_corner_node_id_dict[44+4*k][1], all_corner_node_id_dict[45+4*k][0], all_corner_node_id_dict[46+4*k][0], all_corner_node_id_dict[47+4*k][1]])
+            height_tile_dict[k+3] |= set([all_corner_node_id_dict[44+4*k][0], all_corner_node_id_dict[45+4*k][1], all_corner_node_id_dict[46+4*k][1], all_corner_node_id_dict[47+4*k][0]])
+        # height_tile_dict[1] |= all_corner_node_id_dict[60][1] + all_corner_node_id_dict[61][0] + all_corner_node_id_dict[62][0] + all_corner_node_id_dict[63][1]
+        # height_tile_dict[2] |= all_corner_node_id_dict[64][1] + all_corner_node_id_dict[65][0] + all_corner_node_id_dict[66][0] + all_corner_node_id_dict[67][1]
+        # height_tile_dict[3] |= all_corner_node_id_dict[68][1] + all_corner_node_id_dict[69][0] + all_corner_node_id_dict[70][0] + all_corner_node_id_dict[71][1]
+        # height_tile_dict[4] |= all_corner_node_id_dict[60][0] + all_corner_node_id_dict[61][1] + all_corner_node_id_dict[62][1] + all_corner_node_id_dict[63][0]
+        # height_tile_dict[5] |= all_corner_node_id_dict[64][0] + all_corner_node_id_dict[65][1] + all_corner_node_id_dict[66][1] + all_corner_node_id_dict[67][0]
+        # height_tile_dict[6] |= all_corner_node_id_dict[68][0] + all_corner_node_id_dict[69][1] + all_corner_node_id_dict[70][1] + all_corner_node_id_dict[71][0]
+        for k in range(3):
+            height_tile_dict[k+1] |= set([all_corner_node_id_dict[60+4*k][1], all_corner_node_id_dict[61+4*k][0], all_corner_node_id_dict[62+4*k][0], all_corner_node_id_dict[63+4*k][1]])
+            height_tile_dict[k+4] |= set([all_corner_node_id_dict[60+4*k][0], all_corner_node_id_dict[61+4*k][1], all_corner_node_id_dict[62+4*k][1], all_corner_node_id_dict[63+4*k][0]])
+        # height_tile_dict[1] |= all_corner_node_id_dict[72][1] + all_corner_node_id_dict[73][0] + all_corner_node_id_dict[74][0] + all_corner_node_id_dict[75][1]
+        # height_tile_dict[2] |= all_corner_node_id_dict[76][1] + all_corner_node_id_dict[77][0] + all_corner_node_id_dict[78][0] + all_corner_node_id_dict[79][1]
+        # height_tile_dict[5] |= all_corner_node_id_dict[72][0] + all_corner_node_id_dict[73][1] + all_corner_node_id_dict[74][1] + all_corner_node_id_dict[75][0]
+        # height_tile_dict[6] |= all_corner_node_id_dict[76][0] + all_corner_node_id_dict[77][1] + all_corner_node_id_dict[78][1] + all_corner_node_id_dict[79][0]
+        for k in range(2):
+            height_tile_dict[k+1] |= set([all_corner_node_id_dict[72+4*k][1], all_corner_node_id_dict[73+4*k][0], all_corner_node_id_dict[74+4*k][0], all_corner_node_id_dict[75+4*k][1]])
+            height_tile_dict[k+5] |= set([all_corner_node_id_dict[72+4*k][0], all_corner_node_id_dict[73+4*k][1], all_corner_node_id_dict[74+4*k][1], all_corner_node_id_dict[75+4*k][0]])
+        height_tile_dict[1] |= set([all_corner_node_id_dict[80][1], all_corner_node_id_dict[81][0], all_corner_node_id_dict[82][0], all_corner_node_id_dict[83][1]])
+        height_tile_dict[6] |= set([all_corner_node_id_dict[80][0], all_corner_node_id_dict[81][1], all_corner_node_id_dict[82][1], all_corner_node_id_dict[83][0]])
+    # Compatible with the old version
+    else:
+        """
+
+        | ID          | Name                 | Height |
+        | ----------- | -------------------- | ------ |
+        | 0,1,2,3     | gray_cube            | 1      |
+        | 4,5,6,7     | blue_cube            | 2      |
+        | 8,9,10,11   | yellow_cube          | 3      |
+        | 12,13,14,15 | orange_cube          | 4      |
+        | 16,17,18,19 | red_cube             | 5      |
+        | 20,21,22,23 | white_cube           | 6      |
+        | 24,25,26,27 | corner_blue_gray     | 2      |
+        | 28,29,30,31 | corner_yellow_blue   | 3      |
+        | 32,33,34,35 | corner_orange_yellow | 4      |
+        | 36,37,38,39 | corner_red_orange    | 5      |
+        | 40,41,42,43 | corner_white_red     | 6      |
+        | 44,45,46,47 | corner_yellow_gray   | 3      |
+        | 48,49,50,51 | corner_orange_blue   | 4      |
+        | 52,53,54,55 | corner_red_yellow    | 5      |
+        | 56,57,58,59 | corner_white_orange  | 6      |
+        | 60,61,62,63 | corner_orange_gray   | 4      |
+        | 64,65,66,67 | corner_red_blue      | 5      |
+        | 68,69,70,71 | corner_white_yellow  | 6      |
+        | 72,73,74,75 | corner_red_gray      | 5      |
+        | 76,77,78,79 | corner_white_blue    | 6      |
+        | 80,81,82,83 | corner_white_gray    | 6      |
+        | 84,85,86,87 | ramp_blue            | 2      |
+        | 88,89,90,91 | ramp_yellow          | 3      |
+        | 92,93,94,95 | ramp_orange          | 4      |
+        | 96,97,98,99 | ramp_red             | 5      |
+        | 100,101,102,103 | ramp_white          | 6      |
+        """
+        height_tile_dict = {
+            0: set(),
+            1: set(all_list[:4]),
+            2: set(all_list[4:8]+all_list[24:28]+all_list[84:88]),
+            3: set(all_list[8:12]+all_list[28:32]+all_list[44:48]+all_list[88:92]),
+            4: set(all_list[12:16]+all_list[32:36]+all_list[48:52]+all_list[60:64]+all_list[92:96]),
+            5: set(all_list[16:20]+all_list[36:40]+all_list[52:56]+all_list[64:68]+all_list[72:76]+all_list[96:100]),
+            6: set(all_list[20:24]+all_list[40:44]+all_list[56:60]+all_list[68:72]+all_list[76:80]+all_list[80:84]+all_list[100:104]),
+            7: set(),
+        }
+    
     # 0: 0 degree, 1: 90 degree, 2: 180 degree, 3: 270 degree
     rotation_dict = {
         0: set(range(0,num_all,4)),
@@ -131,18 +252,17 @@ def get_connectity_dict(out_height_dict=False):
     # Rule 1: Blocks of the same height can be connected
     # Collect blocks of the same height in a dict
     same_height_dict = {}
-    for i in range(num_all):
+    for i in all_tile_id:
         same_height_dict[i] = set()
         for value in height_tile_dict.values():
             # If tile i is in current height layer, then add all tiles in this layer to the same_height_dict
             if i in value:
-                # Deprecated code: does not contain itself
-                # same_height_dict[i] = value - set([i])
-                same_height_dict[i] = value
+                # record all same height node except corner_nodes, we will add them later
+                same_height_dict[i] = value - set(all_corner_node_id_list)
     # Rule2 is for blocks of lower height than the current one
     # Collect blocks of lower height in a dict
     lower_height_dict = {}
-    for i in range(num_all):
+    for i in all_tile_id:
         lower_height_dict[i] = set()
         for key, value in height_tile_dict.items():
             # If tile i is in current layer, then add all tiles in the lower layer to the dict
@@ -151,61 +271,100 @@ def get_connectity_dict(out_height_dict=False):
                 for j in range(key):
                     # Set operation: merge
                     lower_height_dict[i] |= height_tile_dict[j]
-    # Rule 3: Direction-specific corners allow passage of low-level blocks.
-    # Collect proper corners: correct height and direction
-    """
-              up
-           lef █ right
-              down
-    example: proper_corner_dict = {
-         0: {
-             "up": [],
-             "down": [],
-             "left": [],
-             "right": [],
-         },
-        1: ....}
-    # when tile_height == corner_height - 1, corenrs with proper direction are allowed to pass
-    # example: ▉ means low cube, ◢ means corner with direction
-    #       ◢ | ◣        
-    #     ◢ ▉ | ▉ ◣
-    # -----------------
-    #     ◥ ▉ | ▉ ◤      
-    #       ◥ | ◤
-    # 
-    """
-    proper_corner_rotation = {
-       "up":[1, 2],
-       "down": [0, 3],
-       "left": [0, 1],
-       "right": [2, 3],
-    }
-
-    # when tile_height >= corner_height, one-way traffic, high to low only
+    # Initialize proper_corner_dict
     proper_corner_dict = {}
-    for i in range(num_all):
+    for i in all_tile_id:
         proper_corner_dict[i] = {}
-        for key, value in height_tile_dict.items():
-            if i in value:
-                tile_height = key
-                proper_height_corner_set = set()
-                # for tile_height >= corner_height, all corners are proper
-                for j in range(tile_height+1):
-                    proper_height_corner_set |= (height_tile_dict[j] & corner_set)
-                # for tile_height == corner_height - 1, corners with limited direction are proper
-                corner_height = tile_height + 1
-                corners_in_corner_height = height_tile_dict[corner_height] & corner_set
-                for direction in direction_list:
-                    proper_corner_dict[i][direction] = set()
-                    # choose a corner with correct height and correct rotation for spefic direction
-                    rotations = proper_corner_rotation[direction]
-                    for rot in rotations:
+        for direction in direction_list:
+            proper_corner_dict[i][direction] = set()
+    proper_corner_rotation = {
+        "up":[1, 2],
+        "down": [0, 3],
+        "left": [0, 1],
+        "right": [2, 3],
+    }
+    if corner_extra_node:
+        # New Version: Spilt each corner_tile into 2 nodes
+        # Rule 3: Direction-specific corner_nodes allow passage of same-height blocks.
+        # example: ▉ means same-height cube, ◢ means corner node with direction
+        #       ◢ | ◣        
+        #     ◢ ▉ | ▉ ◣
+        # -----------------
+        #     ◥ ▉ | ▉ ◤      
+        #       ◥ | ◤
+        #
+        for i in all_tile_id:
+            for key, value in height_tile_dict.items():
+                if i in value:
+                    tile_height = key
+                    proper_height_corner_set = set()
+                    # all corners lower than current_tile are proper
+                    for j in range(tile_height+1):
+                        proper_height_corner_set |= (height_tile_dict[j] & set(all_corner_node_id_list))
+                    # for tile_height == corner_height, corners with limited direction are proper
+                    corner_height = tile_height
+                    corners_in_corner_height = height_tile_dict[corner_height] & set(all_corner_node_id_list)
+                    for direction in direction_list:
                         # choose a corner with correct height and correct rotation for spefic direction
-                        direction_limited_high_corners = corners_in_corner_height & rotation_dict[rot]
-                        # merge to proper_corner_dict
-                        proper_corner_dict[i][direction] |= direction_limited_high_corners
-                    # merge height rule
-                    proper_corner_dict[i][direction] |= proper_height_corner_set 
+                        rotations = proper_corner_rotation[direction]
+                        for rot in rotations:
+                            specific_direction_tiles_id = rotation_dict[rot]
+                            specific_direction_tiles_nodes_id_set = set() 
+                            for node_id_list in map(tileid2nodeid, list(specific_direction_tiles_id), np.ones_like(list(specific_direction_tiles_id)) * corner_extra_node):
+                                specific_direction_tiles_nodes_id_set |= set(node_id_list)
+                            # choose a corner with correct height and correct rotation for spefic direction
+                            direction_limited_high_corners = corners_in_corner_height & specific_direction_tiles_nodes_id_set
+                            # merge to proper_corner_dict
+                            proper_corner_dict[i][direction] |= direction_limited_high_corners
+                        # merge height rule
+                        proper_corner_dict[i][direction] |= proper_height_corner_set 
+    else:
+        # For old version compatibility
+        # Rule 3: Direction-specific corners allow passage of low-level blocks.
+        # Collect proper corners: correct height and direction
+        """
+                up
+            lef █ right
+                down
+        example: proper_corner_dict = {
+            0: {
+                "up": [],
+                "down": [],
+                "left": [],
+                "right": [],
+            },
+            1: ....}
+        # when tile_height == corner_height - 1, corenrs with proper direction are allowed to pass
+        # example: ▉ means low cube, ◢ means corner with direction
+        #       ◢ | ◣        
+        #     ◢ ▉ | ▉ ◣
+        # -----------------
+        #     ◥ ▉ | ▉ ◤      
+        #       ◥ | ◤
+        # 
+        """
+        # when tile_height >= corner_height, one-way traffic, high to low only
+        for i in all_tile_id:
+            for key, value in height_tile_dict.items():
+                if i in value:
+                    tile_height = key
+                    proper_height_corner_set = set()
+                    # all corners lower than current_tile are proper
+                    for j in range(tile_height+1):
+                        proper_height_corner_set |= (height_tile_dict[j] & corner_set)
+                    # for tile_height == corner_height - 1, corners with limited direction are proper
+                    corner_height = tile_height + 1
+                    corners_in_corner_height = height_tile_dict[corner_height] & corner_set
+                    for direction in direction_list:
+                        # choose a corner with correct height and correct rotation for spefic direction
+                        rotations = proper_corner_rotation[direction]
+                        for rot in rotations:
+                            # choose a corner with correct height and correct rotation for spefic direction
+                            direction_limited_high_corners = corners_in_corner_height & rotation_dict[rot]
+                            # merge to proper_corner_dict
+                            proper_corner_dict[i][direction] |= direction_limited_high_corners
+                        # merge height rule
+                        proper_corner_dict[i][direction] |= proper_height_corner_set 
     # Rule 4: proper ramp: correct height and angle
     """
     example: T is ramp, ▉ is higher cube
@@ -234,8 +393,12 @@ def get_connectity_dict(out_height_dict=False):
     }
 
     proper_ramp_dict = {}
-    for i in range(num_all):
+    for i in all_tile_id:
         proper_ramp_dict[i] = {}
+        for direction in direction_list:
+            proper_ramp_dict[i][direction] = set()
+    for i in all_tile_id:
+        # proper_ramp_dict[i] = {}
         for key, value in height_tile_dict.items():
             if i in value:
                 tile_height = key
@@ -249,7 +412,7 @@ def get_connectity_dict(out_height_dict=False):
                 ramps_in_ramp_height = height_tile_dict[ramp_height] & ramp_set
                 for direction in direction_list:
                     rotations = proper_ramp_rotation_for_up[direction]
-                    proper_ramp_dict[i][direction] = set()
+                    # proper_ramp_dict[i][direction] = set()
                     # choose a ramp with correct height and correct rotation for spefic direction
                     for rot in rotations:
                         # choose a ramp with correct height and correct rotation for spefic direction
@@ -292,7 +455,7 @@ def get_connectity_dict(out_height_dict=False):
 
     # rule combination
     con_dict = {}
-    for i in range(num_all):
+    for i in all_tile_id:
         con_dict[i] = {}
         for direction in direction_list:
             con_dict[i][direction] = same_height_dict[i] | lower_height_dict[i] | proper_corner_dict[i][direction] | proper_ramp_dict[i][direction]
@@ -302,6 +465,8 @@ def get_connectity_dict(out_height_dict=False):
                     con_dict[i][direction] = con_dict[i][direction] - set(ramp_exclude_dict[i][direction])
     if out_height_dict:
         return con_dict, height_tile_dict
+    elif return_num_all:
+        return con_dict, num_all
     else:
         return con_dict
 
@@ -330,45 +495,103 @@ def get_neighbour(size=81):
                 neighbour_dict[np_map[i][j]]["right"] = np_map[i][j+1]
     return neighbour_dict
 
-# Just to bind index and value together
-class TileClass:
-    def __init__(self, index, value):
-        self.index = index
-        self.value = value
-
-    def __repr__(self):
-        return f"TileClass({self.index}, {self.value})"
-    
-    def __str__(self):
-        return f"TileClass({self.index}, {self.value})"
-
-# Get connectivity rules
-connectity_dict = get_connectity_dict()
 # Convert the rules we defined into the adjacency needed by NetworkX
-def map2adjacency(map_in: List, size=81):
+def map2adjacency(map_in: List, size=81, corner_extra_node=False):
+    # Get connectivity rules
+    connectity_dict, num_all = get_connectity_dict(corner_extra_node=corner_extra_node, return_num_all=True)
+    corner_set = set(range(24, 84))
+    # ---
+    # Each corner tile in the map has two nodes, but since there is only one tile representing it, we have to designate one of the nodes as a neighbor to other tiles.
+    # for example, direction_neb_corner_node_choice['up'][24] = 0 means that the node 0 of the corner tile 24 is the neighbor of the tile above it.
+    # 0: 0 degree, 1: 90 degree, 2: 180 degree, 3: 270 degree
+    rotation_dict = {
+        0: set(range(0,num_all,4)) & corner_set,
+        1: set(range(1,num_all,4)) & corner_set,
+        2: set(range(2,num_all,4)) & corner_set,
+        3: set(range(3,num_all,4)) & corner_set,
+    }
+    directions = ['up', 'down', 'left', 'right']
+    direction_neb_corner_node_choice = {}
+    all_node_choices = {
+        'up': [0, 1, 0, 1],
+        'down': [1, 0, 1, 0],
+        'left': [1,1,1,1],
+        'right': [0,0,0,0]
+    }
+    for direction in directions:
+        direction_neb_corner_node_choice[direction] = {}
+        for i in range(4):
+            for j in rotation_dict[i]:
+                direction_neb_corner_node_choice[direction][j] = all_node_choices[direction][i]
+    # --
+    
     # map shape(81,1)
     # Get neighbor information
     neighbour_dict = get_neighbour(size=size)
-    adjacency = {i: [] for i in range(size)}
+    # adjacency = {i: [] for i in range(size)}
+    adjacency = {}
     for i, tile in enumerate(map_in):
         neb = neighbour_dict[i]
-        con = connectity_dict[tile]
-        for key in neb.keys():
-            valid_neb_tile = map_in[neb[key]]
-            if valid_neb_tile in con[key]:
-                adjacency[i].append(TileClass(neb[key],valid_neb_tile))
+        tile_node_id = tileid2nodeid(tile, corner_extra_node=corner_extra_node)
+        # Maybe 1 node or 2 nodes
+        # if 2 nodes, then try to check the inner-connect between them
+        if len(tile_node_id) == 2:
+            current_tile_is_corner = True
+            adjacency[float(f'{i}.1')] = []
+            adjacency[float(f'{i}.2')] = []
+            # Get the 2 nodes
+            node_a = tile_node_id[0]
+            node_b = tile_node_id[1]
+            # Get the 2 nodes' connectity rule
+            con_a = connectity_dict[node_a]
+            con_b = connectity_dict[node_b]
+            # The Direction here is not important, as they are in the same tile
+            if node_b in con_a["right"]:
+                adjacency[float(f'{i}.1')].append(TileClass(float(f'{i}.2'), node_b))
+            if node_a in con_b["left"]:
+               adjacency[float(f'{i}.2')].append(TileClass(float(f'{i}.1'), node_a))
+        else:
+            current_tile_is_corner = False
+            adjacency[int(f'{i}')] = []
+
+        for j, current_node_id in enumerate(tile_node_id):
+            con = connectity_dict[current_node_id]
+            for key in neb.keys():
+                valid_neb_tile = map_in[neb[key]]
+                valid_neb_node_id = tileid2nodeid(valid_neb_tile, corner_extra_node=corner_extra_node)
+                # If neighbor tile is a corner(consist of 2 nodes), then try to find the correct node as its real neighbor
+                current_neb_is_corner = len(valid_neb_node_id) == 2
+                if current_neb_is_corner:
+                    # find the correct node
+                    node_index = direction_neb_corner_node_choice[key][valid_neb_tile]
+                    selected_node_id = valid_neb_node_id[node_index]
+                    if selected_node_id in con[key]:
+                        if current_tile_is_corner:
+                            adjacency[float(f'{i}.{j+1}')].append(TileClass(float(f'{neb[key]}.{node_index+1}'), selected_node_id))
+                        else:
+                            adjacency[int(f'{i}')].append(TileClass(float(f'{neb[key]}.{node_index+1}'), selected_node_id))
+                else:
+                    selected_node_id = valid_neb_node_id[0]
+                    if selected_node_id in con[key]:
+                        if current_tile_is_corner:
+                            adjacency[float(f'{i}.{j+1}')].append(TileClass(int(f'{neb[key]}'), selected_node_id))
+                        else:
+                            adjacency[int(f'{i}')].append(TileClass(int(f'{neb[key]}'), selected_node_id))
     return adjacency
 
-def map2digraph(map_in: List, size=81):
-    adjacency = map2adjacency(map_in, size=size)
+def map2digraph(map_in: List, size=81, corner_extra_node=False):
+    # Add corner_extra_node flag for compability with old version
+    # corner_extra_node is used to add extra nodes for corner tiles, it will solve the problem of mix height of corner tiles 
+    adjacency = map2adjacency(map_in, size=size, corner_extra_node=corner_extra_node)
     DG = nx.DiGraph()
     for i,node in enumerate(adjacency.keys()):
-        DG.add_node(node, tile=map_in[i])
+        DG.add_node(node, tile=map_in[int(node)])
     for key, value in adjacency.items():
         for v in value:
             DG.add_edge(key, v.index)
     return DG
 
+# Deprecated in new version
 """
 Calculate all shortest paths after filtering out the wrong paths caused by corners(i.e.: low -> corner -> high, this is something only ramps can do.
 """
@@ -383,10 +606,9 @@ def get_all_pair_shortest_path(DG, return_dict=False):
     cube_list = all_list[0:24]
     corner_list = all_list[24:84]
     height_tile_dict = get_connectity_dict(out_height_dict=True)[1]
-    tileid2nodeid = {}
-    for i in range(len(DG.nodes)):
-        node = DG.nodes[i]
-        tileid2nodeid.update({node['tile']: i})
+    tileid2nodeid_dict = {}
+    for i,node in enumerate(DG.nodes):
+        tileid2nodeid_dict.update({DG.nodes[node]['tile']: i})
 
     # set exclude rule
     all_exclude_path_list = []
@@ -401,9 +623,9 @@ def get_all_pair_shortest_path(DG, return_dict=False):
                     for i_corner in corners_at_this_height:
                         for i_cube in cubes_at_this_height:
                             # only keep rule for tiles that is in currunt map
-                            if cube_id in tileid2nodeid.keys() and i_corner in tileid2nodeid.keys() and i_cube in tileid2nodeid.keys():
+                            if cube_id in tileid2nodeid_dict.keys() and i_corner in tileid2nodeid_dict.keys() and i_cube in tileid2nodeid_dict.keys():
                                 # print(f"cube_id={cube_id} i_corner={i_corner} i_cube={i_cube}")
-                                all_exclude_path_list.append([tileid2nodeid[cube_id], tileid2nodeid[i_corner], tileid2nodeid[i_cube]])
+                                all_exclude_path_list.append([tileid2nodeid_dict[cube_id], tileid2nodeid_dict[i_corner], tileid2nodeid_dict[i_cube]])
                             else:
                                 continue
     # helper function to check if a small list is in a big list
@@ -454,12 +676,23 @@ def get_all_pair_shortest_path(DG, return_dict=False):
         return all_shortest_paths
 
 
-def get_map_shortest_length_dist(DG, norm=True):
-    all_shortest_paths = get_all_pair_shortest_path(DG)
-    all_shortest_paths_length = np.array([len(path) + 1 for path in all_shortest_paths])
+def get_map_shortest_length_dist(DG, norm=True, corner_extra_node=False):
+    if corner_extra_node:
+        all_pair_shortest_paths_length = nx.all_pairs_shortest_path_length(DG)
+        all_shortest_paths_length = []
+        for key, value in all_pair_shortest_paths_length:
+            for k, v in value.items():
+                 # exclude the same node
+                # if k != key:
+                all_shortest_paths_length.append(v+1)
+        all_shortest_paths_length = np.array(all_shortest_paths_length)
+    else:
+        all_shortest_paths = get_all_pair_shortest_path(DG)
+        all_shortest_paths_length = np.array([len(path) for path in all_shortest_paths])
     all_shortest_length_dist = np.zeros(len(DG) * len(DG)).astype(int)
     for i in range(len(all_shortest_paths_length)):
         all_shortest_length_dist[i] = all_shortest_paths_length[i]
     if norm:
+        all_shortest_length_dist = all_shortest_length_dist.astype(float)
         all_shortest_length_dist /= np.sum(all_shortest_paths_length)
     return all_shortest_length_dist

@@ -1,0 +1,5 @@
+- +exprement=all_map_in_single_env
+- train.compute_device_id=7
+- train.graphics_device_id=7
+- maps.name=0
+- train.timesteps=5000000

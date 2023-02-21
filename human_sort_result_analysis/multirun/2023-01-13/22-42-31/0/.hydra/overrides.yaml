@@ -1,0 +1,3 @@
+- maps.name=0
+- train.compute_device_id=7
+- train.graphics_device_id=7

@@ -15,3 +15,6 @@ logs/
 runs/
 train_logs/
 mutate_count.png
+*.zip
+train_logs/
+generate_maps/

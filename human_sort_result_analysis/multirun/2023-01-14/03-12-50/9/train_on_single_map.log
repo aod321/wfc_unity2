@@ -1,0 +1,3 @@
+[2023-01-14 03:13:06,580][__main__][INFO] - Training on ./stimulus_jsons/9.json
+[2023-01-14 03:13:06,580][__main__][INFO] - Current RunID:vlusvc50
+[2023-01-14 03:13:06,581][__main__][INFO] - Check Data In:https://wandb.ai/myinzi123/train_on_human_map/runs/vlusvc50

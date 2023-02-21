@@ -1,0 +1,198 @@
+<set size="48">
+    <tiles>
+        <tile name="cube_gray" symmetry="X" weight="1.0"/>
+        <tile name="cube_blue" symmetry="X" weight="1.0"/>
+        <tile name="cube_yellow" symmetry="X" weight="1.0"/>
+        <tile name="cube_orange" symmetry="X" weight="1.0"/>
+        <tile name="cube_red" symmetry="X" weight="1.0"/>
+        <tile name="cube_white" symmetry="X" weight="1.0"/>
+        <tile name="corner_blue_gray" symmetry="L" weight="1.0"/>
+        <tile name="corner_yellow_blue" symmetry="L" weight="1.0"/>
+        <tile name="corner_orange_yellow" symmetry="L" weight="1.0"/>
+        <tile name="corner_red_orange" symmetry="L" weight="1.0"/>
+        <tile name="corner_white_red" symmetry="L" weight="1.0"/>
+        <tile name="corner_yellow_gray" symmetry="L" weight="1.0"/>
+        <tile name="corner_orange_blue" symmetry="L" weight="1.0"/>
+        <tile name="corner_red_yellow" symmetry="L" weight="1.0"/>
+        <tile name="corner_white_orange" symmetry="L" weight="1.0"/>
+        <tile name="corner_orange_gray" symmetry="L" weight="1.0"/>
+        <tile name="corner_red_blue" symmetry="L" weight="1.0"/>
+        <tile name="corner_white_yellow" symmetry="L" weight="1.0"/>
+        <tile name="corner_red_gray" symmetry="L" weight="1.0"/>
+        <tile name="corner_white_blue" symmetry="L" weight="1.0"/>
+        <tile name="corner_white_gray" symmetry="L" weight="1.0"/>
+        <tile name="ramp_blue" symmetry="T" weight="1.0"/>
+        <tile name="ramp_yellow" symmetry="T" weight="1.0"/>
+        <tile name="ramp_orange" symmetry="T" weight="1.0"/>
+        <tile name="ramp_red" symmetry="T" weight="1.0"/>
+        <tile name="ramp_white" symmetry="T" weight="1.0"/>
+    </tiles>
+    <neighbors>
+        <neighbor left="cube_gray" right="cube_gray" weight="1.0"/>
+        <neighbor left="cube_blue" right="cube_blue" weight="1.0"/>
+        <neighbor left="cube_blue" right="cube_gray" weight="1.0"/>
+
+        <neighbor left="cube_yellow" right="cube_yellow" weight="1.0"/>
+        <neighbor left="cube_yellow" right="cube_blue" weight="1.0"/>
+        <neighbor left="cube_yellow" right="cube_gray" weight="1.0"/>
+
+        <neighbor left="cube_orange" right="cube_orange" weight="1.0"/>
+        <neighbor left="cube_orange" right="cube_yellow" weight="1.0"/>
+        <neighbor left="cube_orange" right="cube_blue" weight="1.0"/>
+        <neighbor left="cube_orange" right="cube_gray" weight="1.0"/>
+
+        <neighbor left="cube_red" right="cube_red" weight="1.0"/>
+        <neighbor left="cube_red" right="cube_orange" weight="1.0"/>
+        <neighbor left="cube_red" right="cube_yellow" weight="1.0"/>
+        <neighbor left="cube_red" right="cube_blue" weight="1.0"/>
+        <neighbor left="cube_red" right="cube_gray" weight="1.0"/>
+
+        <neighbor left="cube_white" right="cube_white" weight="1.0"/>
+        <neighbor left="cube_white" right="cube_red" weight="1.0"/>
+        <neighbor left="cube_white" right="cube_orange" weight="1.0"/>
+        <neighbor left="cube_white" right="cube_yellow" weight="1.0"/>
+        <neighbor left="cube_white" right="cube_blue" weight="1.0"/>
+        <neighbor left="cube_white" right="cube_gray" weight="1.0"/>
+
+        <neighbor left="corner_blue_gray" right="cube_gray" weight="1.0"/>
+        <neighbor left="corner_blue_gray 2" right="cube_blue" weight="1.0"/>
+        <neighbor left="corner_blue_gray 1" right="corner_blue_gray" weight="1.0"/>
+        <neighbor left="corner_blue_gray 3" right="corner_blue_gray 2" weight="1.0"/>
+
+        <neighbor left="corner_yellow_gray" right="cube_gray" weight="1.0"/>
+        <neighbor left="corner_yellow_gray 2" right="cube_yellow" weight="1.0"/>
+        <neighbor left="corner_yellow_gray 1" right="corner_yellow_gray" weight="1.0"/>
+        <neighbor left="corner_yellow_gray 3" right="corner_yellow_gray 2" weight="1.0"/>
+        <neighbor left="corner_yellow_blue" right="cube_blue" weight="1.0"/>
+        <neighbor left="corner_yellow_blue 2" right="cube_yellow" weight="1.0"/>
+        <neighbor left="corner_yellow_blue 1" right="corner_yellow_blue" weight="1.0"/>
+        <neighbor left="corner_yellow_blue 3" right="corner_yellow_blue 2" weight="1.0"/>
+
+        <neighbor left="corner_orange_yellow" right="cube_yellow" weight="1.0"/>
+        <neighbor left="corner_orange_yellow 2" right="cube_orange" weight="1.0"/>
+        <neighbor left="corner_orange_yellow 1" right="corner_orange_yellow" weight="1.0"/>
+        <neighbor left="corner_orange_yellow 3" right="corner_orange_yellow 2" weight="1.0"/>
+        <neighbor left="corner_orange_blue" right="cube_blue" weight="1.0"/>
+        <neighbor left="corner_orange_blue 2" right="cube_orange" weight="1.0"/>
+        <neighbor left="corner_orange_blue 1" right="corner_orange_blue" weight="1.0"/>
+        <neighbor left="corner_orange_blue 3" right="corner_orange_blue 2" weight="1.0"/>
+        <neighbor left="corner_orange_gray" right="cube_gray" weight="1.0"/>
+        <neighbor left="corner_orange_gray 2" right="cube_orange" weight="1.0"/>
+        <neighbor left="corner_orange_gray 1" right="corner_orange_gray" weight="1.0"/>
+        <neighbor left="corner_orange_gray 3" right="corner_orange_gray 2" weight="1.0"/>
+
+        <neighbor left="corner_red_orange" right="cube_orange" weight="1.0"/>
+        <neighbor left="corner_red_orange 2" right="cube_red" weight="1.0"/>
+        <neighbor left="corner_red_orange 1" right="corner_red_orange" weight="1.0"/>
+        <neighbor left="corner_red_orange 3" right="corner_red_orange 2" weight="1.0"/>
+        <neighbor left="corner_red_yellow" right="cube_yellow" weight="1.0"/>
+        <neighbor left="corner_red_yellow 2" right="cube_red" weight="1.0"/>
+        <neighbor left="corner_red_yellow 1" right="corner_red_yellow" weight="1.0"/>
+        <neighbor left="corner_red_yellow 3" right="corner_red_yellow 2" weight="1.0"/>
+        <neighbor left="corner_red_blue" right="cube_blue" weight="1.0"/>
+        <neighbor left="corner_red_blue 2" right="cube_red" weight="1.0"/>
+        <neighbor left="corner_red_blue 1" right="corner_red_blue" weight="1.0"/>
+        <neighbor left="corner_red_blue 3" right="corner_red_blue 2" weight="1.0"/>
+        <neighbor left="corner_red_gray" right="cube_gray" weight="1.0"/>
+        <neighbor left="corner_red_gray 2" right="cube_red" weight="1.0"/>
+        <neighbor left="corner_red_gray 1" right="corner_red_gray" weight="1.0"/>
+        <neighbor left="corner_red_gray 3" right="corner_red_gray 2" weight="1.0"/>
+
+        <neighbor left="corner_white_red" right="cube_red" weight="1.0"/>
+        <neighbor left="corner_white_red 2" right="cube_white" weight="1.0"/>
+        <neighbor left="corner_white_red 1" right="corner_white_red" weight="1.0"/>
+        <neighbor left="corner_white_red 3" right="corner_white_red 2" weight="1.0"/>
+        <neighbor left="corner_white_orange" right="cube_orange" weight="1.0"/>
+        <neighbor left="corner_white_orange 2" right="cube_white" weight="1.0"/>
+        <neighbor left="corner_white_orange 1" right="corner_white_orange" weight="1.0"/>
+        <neighbor left="corner_white_orange 3" right="corner_white_orange 2" weight="1.0"/>
+        <neighbor left="corner_white_yellow" right="cube_yellow" weight="1.0"/>
+        <neighbor left="corner_white_yellow 2" right="cube_white" weight="1.0"/>
+        <neighbor left="corner_white_yellow 1" right="corner_white_yellow" weight="1.0"/>
+        <neighbor left="corner_white_yellow 3" right="corner_white_yellow 2" weight="1.0"/>
+        <neighbor left="corner_white_blue" right="cube_blue" weight="1.0"/>
+        <neighbor left="corner_white_blue 2" right="cube_white" weight="1.0"/>
+        <neighbor left="corner_white_blue 1" right="corner_white_blue" weight="1.0"/>
+        <neighbor left="corner_white_blue 3" right="corner_white_blue 2" weight="1.0"/>
+        <neighbor left="corner_white_gray" right="cube_gray" weight="1.0"/>
+        <neighbor left="corner_white_gray 2" right="cube_white" weight="1.0"/>
+        <neighbor left="corner_white_gray 1" right="corner_white_gray" weight="1.0"/>
+        <neighbor left="corner_white_gray 3" right="corner_white_gray 2" weight="1.0"/>
+
+        <neighbor left="ramp_blue" right="cube_yellow" weight="1.0"/>
+        <neighbor left="ramp_blue" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_blue" right="cube_gray" weight="1.0"/>
+        <neighbor left="ramp_blue 3" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_blue 1" right="cube_gray" weight="1.0"/>
+        <neighbor left="ramp_blue" right="ramp_blue" weight="1.0"/>
+
+        <neighbor left="ramp_yellow" right="cube_yellow" weight="1.0"/>
+        <neighbor left="ramp_yellow" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_yellow" right="cube_gray" weight="1.0"/>
+        <neighbor left="ramp_yellow 3" right="cube_yellow" weight="1.0"/>
+        <neighbor left="ramp_yellow 1" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_yellow" right="ramp_yellow" weight="1.0"/>
+        <neighbor left="ramp_yellow 1" right="ramp_blue 1" weight="1.0"/>
+
+        <neighbor left="ramp_orange" right="cube_orange" weight="1.0"/>
+        <neighbor left="ramp_orange" right="cube_yellow" weight="1.0"/>
+        <neighbor left="ramp_orange" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_orange" right="cube_gray" weight="1.0"/>
+        <neighbor left="ramp_orange 3" right="cube_orange" weight="1.0"/>
+        <neighbor left="ramp_orange 1" right="cube_yellow" weight="1.0"/>
+        <neighbor left="ramp_orange" right="ramp_orange" weight="1.0"/>
+        <neighbor left="ramp_orange 1" right="ramp_yellow 1" weight="1.0"/>
+
+        <neighbor left="ramp_red" right="cube_red" weight="1.0"/>
+        <neighbor left="ramp_red" right="cube_orange" weight="1.0"/>
+        <neighbor left="ramp_red" right="cube_yellow" weight="1.0"/>
+        <neighbor left="ramp_red" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_red" right="cube_gray" weight="1.0"/>
+        <neighbor left="ramp_red 3" right="cube_red" weight="1.0"/>
+        <neighbor left="ramp_red 1" right="cube_orange" weight="1.0"/>
+        <neighbor left="ramp_red" right="ramp_red" weight="1.0"/>
+        <neighbor left="ramp_red 1" right="ramp_orange 1" weight="1.0"/>
+
+        <neighbor left="ramp_white" right="cube_white" weight="1.0"/>
+        <neighbor left="ramp_white" right="cube_red" weight="1.0"/>
+        <neighbor left="ramp_white" right="cube_orange" weight="1.0"/>
+        <neighbor left="ramp_white" right="cube_yellow" weight="1.0"/>
+        <neighbor left="ramp_white" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_white" right="cube_gray" weight="1.0"/>
+        <neighbor left="ramp_white 3" right="cube_white" weight="1.0"/>
+        <neighbor left="ramp_white 1" right="cube_red" weight="1.0"/>
+        <neighbor left="ramp_white" right="ramp_white" weight="1.0"/>
+        <neighbor left="ramp_white 1" right="ramp_red 1" weight="1.0"/>
+
+    </neighbors>
+    <subsets>
+        <subset name="xland">
+        <tile name="cube_gray"/>
+        <tile name="cube_blue"/>
+        <tile name="cube_yellow"/>
+        <tile name="cube_orange"/>
+        <tile name="cube_red"/>
+        <tile name="cube_white"/>
+        <tile name="corner_blue_gray"/>
+        <tile name="corner_yellow_blue"/>
+        <tile name="corner_orange_yellow"/>
+        <tile name="corner_red_orange"/>
+        <tile name="corner_white_red"/>
+        <tile name="corner_yellow_gray"/>
+        <tile name="corner_orange_blue"/>
+        <tile name="corner_red_yellow"/>
+        <tile name="corner_white_orange"/>
+        <tile name="corner_orange_gray"/>
+        <tile name="corner_red_blue"/>
+        <tile name="corner_white_yellow"/>
+        <tile name="corner_red_gray"/>
+        <tile name="corner_white_blue"/>
+        <tile name="corner_white_gray"/>
+        <tile name="ramp_blue"/>
+        <tile name="ramp_yellow"/>
+        <tile name="ramp_orange"/>
+        <tile name="ramp_red"/>
+        <tile name="ramp_white"/>
+        </subset>
+    </subsets>
+</set>

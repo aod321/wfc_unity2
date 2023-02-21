@@ -7,7 +7,7 @@ from map2graph import get_connectity_dict, tiles2data
 def tileid_to_json(tile_id: list, save_path: str):
     json_data ={}
     wave_list = []
-    for i in range(81):
+    for i in range(len(tile_id)):
         wave_list.append(tile_id[i][0])
         wave_list.append(tile_id[i][1])
     json_data["data"] = wave_list

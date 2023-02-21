@@ -1,9 +1,12 @@
 import numpy as np
-from WFCUnity3DEnv_fastwfc import WFCUnity3DEnv
+# from WFCUnity3DEnv_fastwfc import WFCUnity3DEnv
+from WFCUnity3DEnv_fastwfc_nodepair import WFCUnity3DEnv
 import fastwfc
 import cv2
 import pygame
 
+
+_SIZE = [84, 84]
 _FRAMES_PER_SEC = 50
 _FRAME_DELAY_MS = int(1000.0 // _FRAMES_PER_SEC)
 
@@ -21,16 +24,18 @@ ip = "0.0.0.0"
 
 def main():
     pygame.init()
-
+    wfc_size = 9
     port = 30051
     timeout = 10
     print("create and join world")
-    env = WFCUnity3DEnv(host=ip, port=port)
+    env = WFCUnity3DEnv(host=ip, port=port, wfc_size=wfc_size, return_all=False, camera_size=_SIZE)
     wfc = fastwfc.XLandWFC("samples.xml")
-    # env.set_wave(wave=wave)
-    # env.render_in_unity()
+    wave,_ = wfc.generate(out_img=False)
+    env.render_in_unity()
+    env.set_wave(wave=wave)
+    env.render_in_unity()
     env.reset()
-    window_surface = pygame.display.set_mode((84,84), 0, 32)
+    window_surface = pygame.display.set_mode(_SIZE, 0, 32)
     pygame.display.set_caption("world")
     window_surface.fill((128, 128, 128))
     with env:
@@ -61,11 +66,11 @@ def main():
                         env.render_in_unity()
                     elif event.key == pygame.K_SPACE:
                         is_jumping = 1
+                        env.reset()
                     elif event.key == pygame.K_ESCAPE:
                         keep_running = False
                         break
             try:
-                    
                 image_obs, reward, done, _ = env.step(requested_action)
                 # ortate image -90 degree
                 image = cv2.rotate(image_obs, rotateCode=cv2.ROTATE_90_CLOCKWISE)

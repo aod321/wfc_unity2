@@ -1,0 +1,3 @@
+[2023-01-13 13:38:54,816][__main__][INFO] - Training on ./stimulus_jsons/37.json
+[2023-01-13 13:38:54,816][__main__][INFO] - Current RunID:ku12m94r
+[2023-01-13 13:38:54,819][__main__][INFO] - Check Data In:https://wandb.ai/myinzi123/train_on_human_map/runs/ku12m94r

@@ -34,13 +34,14 @@ class GymFromDMEnv(gym.Env):
 
   metadata = {'render.modes': ['human', 'rgb_array']}
 
-  def __init__(self, env: dm_env.Environment):
+  def __init__(self, env: dm_env.Environment, camera_size: list=[84, 84]):
     self._env = env  # type: dm_env.Environment
     self._last_observation = None  # type: Optional[np.ndarray]
     self.viewer = None
     self.game_over = False  # Needed for Dopamine agents.
     self.action_space = self.action_space()
     self.observation_space = self.observation_space()
+    self.camera_size = camera_size
   
   def action_space(self) -> spaces.Discrete:
     action_spec = self._env.action_spec()  # type: specs.DiscreteArray
@@ -50,16 +51,18 @@ class GymFromDMEnv(gym.Env):
   def observation_space(self) -> spaces.Box:
     obs_spec = self._env.observation_spec()  # type: specs.Array
     obs_spec = obs_spec['RGBA_INTERLEAVED']
+    if not hasattr(self, 'camera_size'):
+      self.camera_size = [84, 84]
     if isinstance(obs_spec, specs.BoundedArray):
       return spaces.Box(
           low=float(obs_spec.minimum),
           high=float(obs_spec.maximum),
-          shape=(84,84,3),
+          shape=(self.camera_size[0],self.camera_size[1],3),
           dtype=obs_spec.dtype)
     return spaces.Box(
         low=-0,
         high=255,
-        shape=(84,84,3),
+        shape=(self.camera_size[0],self.camera_size[1],3),
         dtype=obs_spec.dtype)
 
   @property
@@ -74,7 +77,7 @@ class GymFromDMEnv(gym.Env):
               'jump': [0]}
     timestep = self._env.step(actions)
     image_obs = timestep.observation['RGBA_INTERLEAVED']
-    image_obs = np.array(ImageOps.flip(Image.frombuffer(mode='RGBA', data=timestep.observation['RGBA_INTERLEAVED'],size=(84, 84))).convert('RGB'))
+    image_obs = np.array(ImageOps.flip(Image.frombuffer(mode='RGBA', data=timestep.observation['RGBA_INTERLEAVED'],size=(self.camera_size[0],self.camera_size[1]))).convert('RGB'))
     self._last_observation = image_obs
     reward = timestep.reward or 0.
     if timestep.last():
@@ -85,7 +88,7 @@ class GymFromDMEnv(gym.Env):
     self.game_over = False
     timestep = self._env.reset()
     image_obs = timestep.observation['RGBA_INTERLEAVED']
-    image_obs = np.array(ImageOps.flip(Image.frombuffer(mode='RGBA', data=timestep.observation['RGBA_INTERLEAVED'],size=(84,84))).convert('RGB'))
+    image_obs = np.array(ImageOps.flip(Image.frombuffer(mode='RGBA', data=timestep.observation['RGBA_INTERLEAVED'],size=(self.camera_size[0],self.camera_size[1]))).convert('RGB'))
     self._last_observation = image_obs
     return image_obs
 

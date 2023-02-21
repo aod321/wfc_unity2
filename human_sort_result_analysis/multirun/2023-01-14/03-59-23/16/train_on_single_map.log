@@ -1,0 +1,3 @@
+[2023-01-14 06:12:54,501][__main__][INFO] - Training on ./stimulus_jsons/16.json
+[2023-01-14 06:12:54,502][__main__][INFO] - Current RunID:384z372t
+[2023-01-14 06:12:54,504][__main__][INFO] - Check Data In:https://wandb.ai/myinzi123/train_on_human_map/runs/384z372t

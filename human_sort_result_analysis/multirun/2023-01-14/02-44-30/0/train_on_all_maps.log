@@ -1,0 +1,5 @@
+[2023-01-14 02:44:38,423][__main__][INFO] - Current RunID:jmzorwfv
+[2023-01-14 02:44:38,425][__main__][INFO] - Check Data In:https://wandb.ai/myinzi123/train_on_human_map/runs/jmzorwfv
+[2023-01-14 02:45:33,696][urllib3.connectionpool][WARNING] - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1131)'))': /api/5288891/envelope/
+[2023-01-14 02:45:33,835][urllib3.connectionpool][WARNING] - Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1131)'))': /api/5288891/envelope/
+[2023-01-14 02:45:33,983][urllib3.connectionpool][WARNING] - Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1131)'))': /api/5288891/envelope/

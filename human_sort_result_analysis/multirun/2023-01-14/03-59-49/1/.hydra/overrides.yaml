@@ -1,0 +1,3 @@
+- +exprement=all_map_in_single_env
+- maps.name=1
+- train.timesteps=1500000

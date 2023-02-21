@@ -1,0 +1,3 @@
+[2023-01-13 12:23:01,651][__main__][INFO] - Training on ./stimulus_jsons/3.json
+[2023-01-13 12:23:01,652][__main__][INFO] - Current RunID:0o10cxzb
+[2023-01-13 12:23:01,655][__main__][INFO] - Check Data In:https://wandb.ai/myinzi123/train_on_human_map/runs/0o10cxzb

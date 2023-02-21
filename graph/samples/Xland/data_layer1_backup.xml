@@ -1,0 +1,31 @@
+<set size="48">
+    <tiles>
+        <tile name="cube_gray" symmetry="X" weight="1.0"/>
+        <tile name="cube_blue" symmetry="X" weight="1.0"/>
+        <tile name="corner_blue_gray" symmetry="L" weight="1.0"/>
+        <tile name="ramp_blue" symmetry="T" weight="0.4"/>
+
+    </tiles>
+    <neighbors>
+        <neighbor left="cube_gray" right="cube_gray" weight="1.0"/>
+        <neighbor left="cube_gray" right="cube_blue" weight="0.4"/>
+        <neighbor left="cube_blue" right="cube_blue" weight="1.0"/>
+        <neighbor left="corner_blue_gray" right="cube_gray" weight="1.0"/>
+        <neighbor left="corner_blue_gray 1" right="cube_blue" weight="1.0"/>
+        <neighbor left="corner_blue_gray 2" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_blue 3" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_blue" right="cube_gray" weight="1.0"/>
+        <neighbor left="ramp_blue" right="cube_blue" weight="1.0"/>
+        <neighbor left="ramp_blue 1" right="cube_gray" weight="1.0"/>
+        <neighbor left="ramp_blue" right="ramp_blue" weight="1.0"/>
+
+    </neighbors>
+    <subsets>
+        <subset name="xland">
+        <tile name="cube_gray" />
+        <tile name="cube_blue" />
+        <tile name="corner_blue_gray" />
+        <tile name="ramp_blue" />
+        </subset>
+    </subsets>
+</set>

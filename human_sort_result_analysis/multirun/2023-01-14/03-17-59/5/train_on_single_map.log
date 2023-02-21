@@ -1,0 +1,4 @@
+[2023-01-14 03:18:13,979][__main__][INFO] - Training on ./stimulus_jsons/5.json
+[2023-01-14 03:18:13,979][__main__][INFO] - Current RunID:h1bvftb2
+[2023-01-14 03:18:13,980][__main__][INFO] - Check Data In:https://wandb.ai/myinzi123/train_on_human_map/runs/h1bvftb2
+[2023-01-14 03:20:01,247][urllib3.connectionpool][WARNING] - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1131)'))': /api/5288891/envelope/

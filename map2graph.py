@@ -144,7 +144,7 @@ def get_connectity_dict(out_height_dict=False, corner_extra_node=False, return_n
         # | 76,77,78,79 | corner_white_blue    | (6,2),(2,6),(2,6),(6,2) |
         # | 80,81,82,83 | corner_white_gray    | (6,1),(1,6),(1,6),(6,1) |
         all_tile_id.extend(all_corner_node_id_list)
-        height_tile_dict = {
+        height_tile_dict_1 = {
             0: set(),
             1: set(all_list[:4]),
             2: set(all_list[4:8]+all_list[84:88]),
@@ -154,49 +154,17 @@ def get_connectity_dict(out_height_dict=False, corner_extra_node=False, return_n
             6: set(all_list[20:24]+all_list[100:104]),
             7: set(),
         }
-        # height_tile_dict[1] |= all_corner_node_id_dict[24+4*0][1] + all_corner_node_id_dict[25][0] + all_corner_node_id_dict[26][0] + all_corner_node_id_dict[27][1]
-        # height_tile_dict[2] |= all_corner_node_id_dict[24+4*0][0] + all_corner_node_id_dict[25][1] + all_corner_node_id_dict[26][1] + all_corner_node_id_dict[27][0] 
-        # height_tile_dict[2] |= all_corner_node_id_dict[24+4][1] + all_corner_node_id_dict[29][0] + all_corner_node_id_dict[30][0] + all_corner_node_id_dict[31][1]
-        # height_tile_dict[3] |= all_corner_node_id_dict[24+4][0] + all_corner_node_id_dict[29][1] + all_corner_node_id_dict[30][1] + all_corner_node_id_dict[31][0]
-        # height_tile_dict[3] |= all_corner_node_id_dict[24+4*2][1] + all_corner_node_id_dict[33][0] + all_corner_node_id_dict[34][0] + all_corner_node_id_dict[35][1]
-        # height_tile_dict[4] |= all_corner_node_id_dict[24+4*2][0] + all_corner_node_id_dict[33][1] + all_corner_node_id_dict[34][1] + all_corner_node_id_dict[35][0]
-        # height_tile_dict[4] |= all_corner_node_id_dict[24+4*3][1] + all_corner_node_id_dict[37][0] + all_corner_node_id_dict[38][0] + all_corner_node_id_dict[39][1]
-        # height_tile_dict[5] |= all_corner_node_id_dict[24+4*3][0] + all_corner_node_id_dict[37][1] + all_corner_node_id_dict[38][1] + all_corner_node_id_dict[39][0]
-        # height_tile_dict[5] |= all_corner_node_id_dict[24+4*4][1] + all_corner_node_id_dict[41][0] + all_corner_node_id_dict[42][0] + all_corner_node_id_dict[43][1]
-        # height_tile_dict[6] |= all_corner_node_id_dict[24+4*4][0] + all_corner_node_id_dict[41][1] + all_corner_node_id_dict[42][1] + all_corner_node_id_dict[43][0]
-        for k in range(1,7):
-            height_tile_dict[k] |= set([all_corner_node_id_dict[24+4*k][1], all_corner_node_id_dict[25+4*k][0], all_corner_node_id_dict[26+4*k][0], all_corner_node_id_dict[27+4*k][1]])
-            if k != 6:
-                height_tile_dict[k+1] |= set([all_corner_node_id_dict[24+4*k][0], all_corner_node_id_dict[25+4*k][1], all_corner_node_id_dict[26+4*k][1], all_corner_node_id_dict[27+4*k][0]])
-        # height_tile_dict[1] |= set(all_corner_node_id_dict[44][1])| set(all_corner_node_id_dict[45][0]) | set(all_corner_node_id_dict[46][0]) | set(all_corner_node_id_dict[47][1])
-        # height_tile_dict[2] |= set(all_corner_node_id_dict[48][1])| set(all_corner_node_id_dict[49][0]) | set(all_corner_node_id_dict[50][0]) | set(all_corner_node_id_dict[51][1])
-        # height_tile_dict[3] |= set(all_corner_node_id_dict[52][1])| set(all_corner_node_id_dict[53][0]) | set(all_corner_node_id_dict[54][0]) | set(all_corner_node_id_dict[55][1])
-        # height_tile_dict[4] |= set(all_corner_node_id_dict[56][1])| set(all_corner_node_id_dict[57][0]) | set(all_corner_node_id_dict[58][0]) | set(all_corner_node_id_dict[59][1])
-        # height_tile_dict[3] |= set(all_corner_node_id_dict[44][0])| set(all_corner_node_id_dict[45][1]) | set(all_corner_node_id_dict[46][1]) | set(all_corner_node_id_dict[47][0])
-        # height_tile_dict[4] |= set(all_corner_node_id_dict[48][0])| set(all_corner_node_id_dict[49][1]) | set(all_corner_node_id_dict[50][1]) | set(all_corner_node_id_dict[51][0])
-        # height_tile_dict[5] |= set(all_corner_node_id_dict[52][0])| set(all_corner_node_id_dict[53][1]) | set(all_corner_node_id_dict[54][1]) | set(all_corner_node_id_dict[55][0])
-        # height_tile_dict[6] |= set(all_corner_node_id_dict[56][0])| set(all_corner_node_id_dict[57][1]) | set(all_corner_node_id_dict[58][1]) | set(all_corner_node_id_dict[59][0])
-        for k in range(4):
-            height_tile_dict[k+1] |= set([all_corner_node_id_dict[44+4*k][1], all_corner_node_id_dict[45+4*k][0], all_corner_node_id_dict[46+4*k][0], all_corner_node_id_dict[47+4*k][1]])
-            height_tile_dict[k+3] |= set([all_corner_node_id_dict[44+4*k][0], all_corner_node_id_dict[45+4*k][1], all_corner_node_id_dict[46+4*k][1], all_corner_node_id_dict[47+4*k][0]])
-        # height_tile_dict[1] |= all_corner_node_id_dict[60][1] + all_corner_node_id_dict[61][0] + all_corner_node_id_dict[62][0] + all_corner_node_id_dict[63][1]
-        # height_tile_dict[2] |= all_corner_node_id_dict[64][1] + all_corner_node_id_dict[65][0] + all_corner_node_id_dict[66][0] + all_corner_node_id_dict[67][1]
-        # height_tile_dict[3] |= all_corner_node_id_dict[68][1] + all_corner_node_id_dict[69][0] + all_corner_node_id_dict[70][0] + all_corner_node_id_dict[71][1]
-        # height_tile_dict[4] |= all_corner_node_id_dict[60][0] + all_corner_node_id_dict[61][1] + all_corner_node_id_dict[62][1] + all_corner_node_id_dict[63][0]
-        # height_tile_dict[5] |= all_corner_node_id_dict[64][0] + all_corner_node_id_dict[65][1] + all_corner_node_id_dict[66][1] + all_corner_node_id_dict[67][0]
-        # height_tile_dict[6] |= all_corner_node_id_dict[68][0] + all_corner_node_id_dict[69][1] + all_corner_node_id_dict[70][1] + all_corner_node_id_dict[71][0]
-        for k in range(3):
-            height_tile_dict[k+1] |= set([all_corner_node_id_dict[60+4*k][1], all_corner_node_id_dict[61+4*k][0], all_corner_node_id_dict[62+4*k][0], all_corner_node_id_dict[63+4*k][1]])
-            height_tile_dict[k+4] |= set([all_corner_node_id_dict[60+4*k][0], all_corner_node_id_dict[61+4*k][1], all_corner_node_id_dict[62+4*k][1], all_corner_node_id_dict[63+4*k][0]])
-        # height_tile_dict[1] |= all_corner_node_id_dict[72][1] + all_corner_node_id_dict[73][0] + all_corner_node_id_dict[74][0] + all_corner_node_id_dict[75][1]
-        # height_tile_dict[2] |= all_corner_node_id_dict[76][1] + all_corner_node_id_dict[77][0] + all_corner_node_id_dict[78][0] + all_corner_node_id_dict[79][1]
-        # height_tile_dict[5] |= all_corner_node_id_dict[72][0] + all_corner_node_id_dict[73][1] + all_corner_node_id_dict[74][1] + all_corner_node_id_dict[75][0]
-        # height_tile_dict[6] |= all_corner_node_id_dict[76][0] + all_corner_node_id_dict[77][1] + all_corner_node_id_dict[78][1] + all_corner_node_id_dict[79][0]
-        for k in range(2):
-            height_tile_dict[k+1] |= set([all_corner_node_id_dict[72+4*k][1], all_corner_node_id_dict[73+4*k][0], all_corner_node_id_dict[74+4*k][0], all_corner_node_id_dict[75+4*k][1]])
-            height_tile_dict[k+5] |= set([all_corner_node_id_dict[72+4*k][0], all_corner_node_id_dict[73+4*k][1], all_corner_node_id_dict[74+4*k][1], all_corner_node_id_dict[75+4*k][0]])
-        height_tile_dict[1] |= set([all_corner_node_id_dict[80][1], all_corner_node_id_dict[81][0], all_corner_node_id_dict[82][0], all_corner_node_id_dict[83][1]])
-        height_tile_dict[6] |= set([all_corner_node_id_dict[80][0], all_corner_node_id_dict[81][1], all_corner_node_id_dict[82][1], all_corner_node_id_dict[83][0]])
+        height_tile_dict_2 = {
+            1: set([all_corner_node_id_dict[i][j] for i, j in [(24, 1), (25, 0), (26, 0), (27, 1), (44, 1), (45, 0), (46, 0), (47, 1), (60, 1), (61, 0), (62, 0), (63, 1), (72, 1), (73, 0), (74, 0), (75, 1), (80, 1), (81, 0), (82, 0), (83, 1)]]),
+            2: set([all_corner_node_id_dict[i][j] for i, j in [(24, 0), (25, 1), (26, 1), (27, 0), (28, 1), (29, 0), (30, 0), (31, 1), (48, 1), (49, 0), (50, 0), (51, 1), (64, 1), (65, 0), (66, 0), (67, 1), (76, 1), (77, 0), (78, 0), (79, 1)]]),
+            3: set([all_corner_node_id_dict[i][j] for i, j in [(28, 0), (29, 1), (30, 1), (31, 0), (32, 1), (33, 0), (34, 0), (35, 1), (44, 0), (45, 1), (46, 1), (47, 0), (52, 1), (53, 0), (54, 0), (55, 1), (68, 1), (69, 0), (70, 0), (71, 1)]]),
+            4: set([all_corner_node_id_dict[i][j] for i, j in [(32, 0), (33, 1), (34, 1), (35, 0), (36, 1), (37, 0), (38, 0), (39, 1), (48, 0), (49, 1), (50, 1), (51, 0), (56, 1), (57, 0), (58, 0), (59, 1), (60, 0), (61, 1), (62, 1), (63, 0)]]),
+            5: set([all_corner_node_id_dict[i][j] for i, j in [(36, 0), (37, 1), (38, 1), (39, 0), (40, 1), (41, 0), (42, 0), (43, 1), (52, 0), (53, 1), (54, 1), (55, 0), (64, 0), (65, 1), (66, 1), (67, 0), (72, 0), (73, 1), (74, 1), (75, 0)]]),
+            6: set([all_corner_node_id_dict[i][j] for i, j in [(40, 0), (41, 1), (42, 1), (43, 0), (56, 0), (57, 1), (58, 1), (59, 0), (68, 0), (69, 1), (70, 1), (71, 0), (76, 0), (77, 1), (78, 1), (79, 0), (80, 0), (81, 1), (82, 1), (83, 0)]]),
+        }
+        # merge together
+        height_tile_dict = {k: height_tile_dict_1.get(k, set()).union(height_tile_dict_2.get(k, set())) for k in set(height_tile_dict_1) | set(height_tile_dict_2)}
+
     # Compatible with the old version
     else:
         """
@@ -388,8 +356,8 @@ def get_connectity_dict(out_height_dict=False, corner_extra_node=False, return_n
     proper_ramp_rotation_for_up = {
         "up":[0],
         "down": [2],
-        "left": [3],
-        "right": [1],
+        "left": [1,3],
+        "right": [1,3],
     }
 
     proper_ramp_dict = {}
@@ -421,33 +389,38 @@ def get_connectity_dict(out_height_dict=False, corner_extra_node=False, return_n
                         proper_ramp_dict[i][direction] |= direction_limited_high_ramps
                     # merge height rule
                     proper_ramp_dict[i][direction] |= proper_height_ramp_set
-    # Optional, because wfc's rules never generate such maps
-    # when ramp's neb is a ramp, some direction should be limited
+    # when ramp's neb is a ramp, some direction should be limited,  Optional, because wfc's rules never generate such maps
+    # when ramp's neb is a cube,  some direction should be limited
     ramp_exclude_dict = {}
     for n in [ramp_list[0], ramp_list[4], ramp_list[8], ramp_list[12], ramp_list[16]]:
+        same_height_cube = (same_height_dict[n] | same_height_dict[n+1] | same_height_dict[n+2] | same_height_dict[n+3]) & cube_set
         ramp_exclude_dict.update({
+                # only up direction can reach same_height cube
                 n: {
                     'up':  set([n, n+1, n+2, n+3]),
-                    'down':  set([n, n+1, n+2, n+3]),
-                    'left':  set([n+1]),
-                    'right': set([n+3]),
+                    'down':  set([n, n+1, n+2, n+3]) | same_height_cube,
+                    'left':  set([n+1]) | same_height_cube,
+                    'right': set([n+3]) | same_height_cube,
                 },
+                # on left can reach same_height cube
                 n+1:{
-                    'up':  set([n+2]),
-                    'down': set([n]),
+                    'up':  set([n+2]) | same_height_cube,
+                    'down': set([n]) | same_height_cube,
                     'left':  set([n, n+1, n+2, n+3]),
-                    'right': set([n, n+1, n+2, n+3]),
+                    'right': set([n, n+1, n+2, n+3]) | same_height_cube,
                 },
+                # only down can reach same_height cube
                 n+2:{
-                    'up':  set([n, n+1, n+2, n+3]),
+                    'up':  set([n, n+1, n+2, n+3]) | same_height_cube,
                     'down': set([n, n+1, n+2, n+3]),
-                    'left':  set([n+1]),
-                    'right': set([n+3]),
+                    'left':  set([n+1]) | same_height_cube,
+                    'right': set([n+3]) | same_height_cube,
                 },
+                # only right can reach same_height cube
                 n+3:{
-                    'up':  set([n+2]),
-                    'down': set([n]),
-                    'left':  set([n, n+1, n+2, n+3]),
+                    'up':  set([n+2]) | same_height_cube,
+                    'down': set([n]) | same_height_cube,
+                    'left':  set([n, n+1, n+2, n+3]) | same_height_cube,
                     'right': set([n, n+1, n+2, n+3]),
                 }
 
